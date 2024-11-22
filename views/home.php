@@ -65,6 +65,7 @@
       object-fit: cover;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
 </head>
 
 <body>
@@ -85,8 +86,7 @@
     centered-slides="true"
     autoplay-delay="4000"
     autoplay-disable-on-interaction="false"
-    loop='true'
-  >
+    loop='true'>
     <?php foreach ($resultsBanner as $row): ?>
       <swiper-slide>
         <img src="admin/<?= $row['duong_dan'] ?>" alt="">
@@ -107,17 +107,18 @@
           <div class="col-6 col-md-4 col-lg-3">
             <div class="tt-product thumbprod-center">
               <div class="tt-image-box boxImage">
-                <a href="#" class="tt-btn-quickview" data-toggle="modal" data-target="#ModalquickView" data-tooltip="Quick View" data-tposition="left"></a>
-                <a href="#" class="tt-btn-wishlist" data-tooltip="Add to Wishlist" data-tposition="left"></a>
-                <a href="#" class="tt-btn-compare" data-tooltip="Add to Compare" data-tposition="left"></a>
-                <a href="product.html">
+                <a href="?act=productDetail&id=<?= $result['id'] ?>" class="tt-btn-quickview" data-target="#ModalquickView" data-tooltip="Xem chi tiết" data-tposition="left"></a>
+                <a href="?act=addFavorite&id=<?= $result['id'] ?>" class="tt-btn-wishlist" data-tooltip="Thêm vào sản phẩm yêu thích" data-tposition="left"></a>
+                <a href="?act=productDetail&id=<?= $result['id'] ?>">
                   <span class="tt-img"><img src="admin/<?= $result['anh_dai_dien'] ?>" data-src="admin/<?= $result['anh_dai_dien'] ?>" alt="" class="loaded" data-was-processed="true"></span>
                   <span class="tt-img-roll-over"><img src="admin/<?= ($this->HomeModel->getImageSecond($result['id']))['duong_dan']  ?>" data-src="admin/<?= ($this->HomeModel->getImageSecond($result['id']))['duong_dan']  ?>" alt="" class="loaded" data-was-processed="true"></span>
                   <span class="tt-label-location">
                     <span class="tt-label-sale">Sale <?= number_format((($result['gia_ban'] - $result['gia_khuyen_mai']) / $result['gia_ban'] * 100), 0) ?>%</span>
                   </span>
                 </a>
-                <a href="#" class="tt-btn-addtocart btn-addCard thumbprod-button-bg" data-toggle="modal" data-target="#modalAddToCartProduct">ADD TO CART</a>
+                <a href="?act=addToCard&idPrd=<?= $result['id'] ?>" class="tt-btn-addtocart btn-addCard thumbprod-button-bg" data-target="?act=addToCard&idPrd=<?= $result['id'] ?>">
+                  Thêm vào giỏ hàng
+                </a>
               </div>
               <div class="tt-description">
                 <div class="tt-row">
@@ -125,17 +126,30 @@
                     <li><a href="#"><?= $result['ten_danh_muc'] ?></a></li>
                   </ul>
                   <div class="tt-rating">
-                    <i class="icon-star"></i>
-                    <i class="icon-star"></i>
-                    <i class="icon-star"></i>
-                    <i class="icon-star-half"></i>
-                    <i class="icon-star-empty"></i>
+                    <?php
+                    $point = ($this->HomeModel->getTotalRateAndCount($result['id']))['trung_binh_diem'];
+                    $rating = isset($point) ? $point : 0;
+                    $fullStars = floor($rating);
+                    $hasHalfStar = ($rating - $fullStars) >= 0.5;
+                    $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+                    for ($i = 0; $i < $fullStars; $i++) {
+                      echo '<i class="icon-star"></i>';
+                    }
+                    // Render sao nửa (nếu có)
+                    if ($hasHalfStar) {
+                      echo '<i class="icon-star-half"></i>';
+                    }
+                    // Render sao rỗng
+                    for ($i = 0; $i < $emptyStars; $i++) {
+                      echo '<i class="icon-star-empty"></i>';
+                    }
+                    ?>
                   </div>
                 </div>
-                <h2 class="tt-title"><a href="product.html" style="display: inline-block; margin: 4px 0;"><?= $result['ten_san_pham'] ?></a></h2>
+                <h2 class="tt-title"><a href="?act=productDetail&id=<?= $result['id'] ?>" style="display: inline-block; margin: 4px 0;"><?= $result['ten_san_pham'] ?></a></h2>
                 <div class="tt-price prdPrice">
-                  <div style="color: #b0b0b0; text-decoration: line-through; font-size: 14px"><?= $result['gia_ban'] ?> VND</div>
-                  <div><?= $result['gia_khuyen_mai'] ?> VND</div>
+                  <div style="color: #b0b0b0; text-decoration: line-through; font-size: 14px"><?= preg_replace('/\.00$/', '', $result['gia_ban']) ?><sup>đ</sup></div>
+                  <div><?= preg_replace('/\.00$/', '', $result['gia_khuyen_mai']) ?><sup>đ</sup></div>
                 </div>
               </div>
             </div>
@@ -157,9 +171,8 @@
           <div class="col-6 col-md-4 col-lg-3">
             <div class="tt-product thumbprod-center">
               <div class="tt-image-box boxImage">
-                <a href="#" class="tt-btn-quickview" data-toggle="modal" data-target="#ModalquickView" data-tooltip="Quick View" data-tposition="left"></a>
-                <a href="#" class="tt-btn-wishlist" data-tooltip="Add to Wishlist" data-tposition="left"></a>
-                <a href="#" class="tt-btn-compare" data-tooltip="Add to Compare" data-tposition="left"></a>
+                <a href="?act=productDetail&id=<?= $result['id'] ?>" class="tt-btn-quickview" data-target="#ModalquickView" data-tooltip="Xem chi tiết" data-tposition="left"></a>
+                <a href="?act=addFavorite&id=<?php echo $result['id']; ?>" class="tt-btn-wishlist" data-tooltip="Thêm vào sản phẩm yêu thích" data-tposition="left"></a>
                 <a href="product.html">
                   <span class="tt-img"><img src="admin/<?= $result['anh_dai_dien'] ?>" data-src="admin/<?= $result['anh_dai_dien'] ?>" alt="" class="loaded" data-was-processed="true"></span>
                   <span class="tt-img-roll-over"><img src="admin/<?= ($this->HomeModel->getImageSecond($result['id']))['duong_dan']  ?>" data-src="admin/<?= ($this->HomeModel->getImageSecond($result['id']))['duong_dan']  ?>" alt="" class="loaded" data-was-processed="true"></span>
@@ -167,7 +180,9 @@
                     <span class="tt-label-sale">Sale <?= number_format((($result['gia_ban'] - $result['gia_khuyen_mai']) / $result['gia_ban'] * 100), 0) ?>%</span>
                   </span>
                 </a>
-                <a href="#" class="tt-btn-addtocart btn-addCard thumbprod-button-bg" data-toggle="modal" data-target="#modalAddToCartProduct">ADD TO CART</a>
+                <a href="?act=addToCard&idPrd=<?= $result['id'] ?>" class="tt-btn-addtocart btn-addCard thumbprod-button-bg" data-target="?act=addToCard&idPrd=<?= $result['id'] ?>">
+                  Thêm vào giỏ hàng
+                </a>
               </div>
               <div class="tt-description">
                 <div class="tt-row">
@@ -175,17 +190,30 @@
                     <li><a href="#"><?= $result['ten_danh_muc'] ?></a></li>
                   </ul>
                   <div class="tt-rating">
-                    <i class="icon-star"></i>
-                    <i class="icon-star"></i>
-                    <i class="icon-star"></i>
-                    <i class="icon-star-half"></i>
-                    <i class="icon-star-empty"></i>
+                    <?php
+                    $point = ($this->HomeModel->getTotalRateAndCount($result['id']))['trung_binh_diem'];
+                    $rating = isset($point) ? $point : 0;
+                    $fullStars = floor($rating);
+                    $hasHalfStar = ($rating - $fullStars) >= 0.5;
+                    $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+                    for ($i = 0; $i < $fullStars; $i++) {
+                      echo '<i class="icon-star"></i>';
+                    }
+                    // Render sao nửa (nếu có)
+                    if ($hasHalfStar) {
+                      echo '<i class="icon-star-half"></i>';
+                    }
+                    // Render sao rỗng
+                    for ($i = 0; $i < $emptyStars; $i++) {
+                      echo '<i class="icon-star-empty"></i>';
+                    }
+                    ?>
                   </div>
                 </div>
                 <h2 class="tt-title"><a href="product.html" style="display: inline-block; margin: 4px 0;"><?= $result['ten_san_pham'] ?></a></h2>
                 <div class="tt-price prdPrice">
-                  <div style="color: #b0b0b0; text-decoration: line-through; font-size: 14px"><?= $result['gia_ban'] ?> VND</div>
-                  <div><?= $result['gia_khuyen_mai'] ?> VND</div>
+                  <div style="color: #b0b0b0; text-decoration: line-through; font-size: 14px"><?= preg_replace('/\.00$/', '', $result['gia_ban']) ?> VND</div>
+                  <div><?= preg_replace('/\.00$/', '', $result['gia_khuyen_mai']) ?> VND</div>
                 </div>
               </div>
             </div>
@@ -198,58 +226,58 @@
 
   <!-- CONTACT -->
   <div class="container-indent" style="margin-top: 80px">
-		<div class="container-fluid">
-			<div class="tt-block-title">
-				<h2 class="tt-title"><a target="_blank" href="https://www.instagram.com/wokieeshop/">@ Theo dõi chúng tôi</a></h2>
-				<div class="tt-description">FACEBOOK</div>
-			</div>
-			<div class="row">
-				<div id="instafeed" class="instafeed-fluid" data-access-token="IGQVJXX1hydHVETWFEMGIzeFFmYzIyU1ZAjTHREakhBU1ZAHU0JOZAXJmSWtfbUotMnNHVGxUTUxXckIwVUlhVk1QTEhfQXliNkVoejlILS1Kem40NU1fSWszOTZAhT0dOZAWZAqLXZA1QWxKSHNhSTdpRmN5WQZDZD" data-limitimg="6"></div>
-			</div>
-		</div>
-	</div>
+    <div class="container-fluid">
+      <div class="tt-block-title">
+        <h2 class="tt-title"><a target="_blank" href="https://www.instagram.com/wokieeshop/">@ Theo dõi chúng tôi</a></h2>
+        <div class="tt-description">FACEBOOK</div>
+      </div>
+      <div class="row">
+        <div id="instafeed" class="instafeed-fluid" data-access-token="IGQVJXX1hydHVETWFEMGIzeFFmYzIyU1ZAjTHREakhBU1ZAHU0JOZAXJmSWtfbUotMnNHVGxUTUxXckIwVUlhVk1QTEhfQXliNkVoejlILS1Kem40NU1fSWszOTZAhT0dOZAWZAqLXZA1QWxKSHNhSTdpRmN5WQZDZD" data-limitimg="6"></div>
+      </div>
+    </div>
+  </div>
 
 
   <!-- MORE -->
   <div class="container-indent mt-5">
-		<div class="container">
-			<div class="row tt-services-listing">
-				<div class="col-xs-12 col-md-6 col-lg-4">
-					<a href="#" class="tt-services-block">
-						<div class="tt-col-icon">
-							<i class="icon-f-48"></i>
-						</div>
-						<div class="tt-col-description">
-							<h4 class="tt-title">Miễn phí giao hàng</h4>
-							<p>Miễn phí vận chuyển cho tất cả các đơn hàng tại Hoa Kỳ hoặc đơn hàng trên 200k</p>
-						</div>
-					</a>
-				</div>
-				<div class="col-xs-12 col-md-6 col-lg-4">
-					<a href="#" class="tt-services-block">
-						<div class="tt-col-icon">
-							<i class="icon-f-35"></i>
-						</div>
-						<div class="tt-col-description">
-							<h4 class="tt-title">Hỗ trợ 24/7</h4>
-							<p>Liên hệ đội ngũ hỗ trợ của chúng tôi để được tư vấn</p>
-						</div>
-					</a>
-				</div>
-				<div class="col-xs-12 col-md-6 col-lg-4">
-					<a href="#" class="tt-services-block">
-						<div class="tt-col-icon">
-							<i class="icon-e-09"></i>
-						</div>
-						<div class="tt-col-description">
-							<h4 class="tt-title">Miễn phí đổi trả trong 24 giờ</h4>
-							<p>Miễn phí đổi hàng trong vòng 24 giờ nếu bạn không hài lòng với sản phẩm.</p>
-						</div>
-					</a>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="container">
+      <div class="row tt-services-listing">
+        <div class="col-xs-12 col-md-6 col-lg-4">
+          <a href="#" class="tt-services-block">
+            <div class="tt-col-icon">
+              <i class="icon-f-48"></i>
+            </div>
+            <div class="tt-col-description">
+              <h4 class="tt-title">Miễn phí giao hàng</h4>
+              <p>Miễn phí vận chuyển cho tất cả các đơn hàng tại Hoa Kỳ hoặc đơn hàng trên 200k</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-xs-12 col-md-6 col-lg-4">
+          <a href="#" class="tt-services-block">
+            <div class="tt-col-icon">
+              <i class="icon-f-35"></i>
+            </div>
+            <div class="tt-col-description">
+              <h4 class="tt-title">Hỗ trợ 24/7</h4>
+              <p>Liên hệ đội ngũ hỗ trợ của chúng tôi để được tư vấn</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-xs-12 col-md-6 col-lg-4">
+          <a href="#" class="tt-services-block">
+            <div class="tt-col-icon">
+              <i class="icon-e-09"></i>
+            </div>
+            <div class="tt-col-description">
+              <h4 class="tt-title">Miễn phí đổi trả trong 24 giờ</h4>
+              <p>Miễn phí đổi hàng trong vòng 24 giờ nếu bạn không hài lòng với sản phẩm.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
   <!-- FOOTER -->
@@ -260,7 +288,6 @@
   <?php
   require_once "layouts/libs_js.php";
   ?>
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
 
   <a href="#" class="tt-back-to-top tt-show" id="js-back-to-top" style="right: 0px;">BACK TO TOP</a>
 
